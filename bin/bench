@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+bin="`dirname "$0"`"
+bin="`cd "$bin"; pwd`"
+
+JAR_PATH=$bin/../target
+
+for f in $JAR_PATH/corfu-benchmark-*-jar-with-dependencies.jar; do
+  if [[ ! -e "$f" ]]; then
+    echo "Failed to find Succinct Core assembly in $JAR_PATH" 1>&2
+    echo "You need to build Succinct-Core before running this program" 1>&2
+    exit 1
+  fi
+  JAR="$f"
+  JAR_COUNT=$((JAR_COUNT+1))
+done
+
+if [ "$JAR_COUNT" -gt "1" ]; then
+  echo "Found multiple Succinct Core assemblies in $JAR_PATH" 1>&2
+  ls "${JAR_PATH}"/corfu-benchmark-*-jar-with-dependencies.jar 1>&2
+  echo "Please remove all but one jar." 1>&2
+  exit 1
+fi
+
+java -cp $JAR edu.berkeley.cs.BenchmarkMain $@
