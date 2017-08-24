@@ -28,7 +28,7 @@ public class BenchmarkMain {
 
         Option numBatchesOpt = new Option("n", "num-batches", true, "Number of batches to read/write");
         numBatchesOpt.setType(Integer.class);
-        options.addOption(batchSizeOpt);
+        options.addOption(numBatchesOpt);
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
