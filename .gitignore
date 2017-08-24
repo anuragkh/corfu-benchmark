@@ -14,6 +14,8 @@
 .idea
 *.iml
 
+# Build files
+target
 
 # Package Files #
 *.jar
