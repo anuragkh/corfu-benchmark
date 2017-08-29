@@ -45,8 +45,10 @@ abstract class CorfuBenchmark {
         this.dataSource = dataSource;
         this.data = new DataPoint[NUM_DATA_PTS];
         readCSV();
+        LOG.info("Initializing Corfu connections/structures...");
         setCorfuRuntime(getRuntimeAndConnect(corfuConfigurationString));
         setMap(getCorfuRuntime().getObjectsView().build().setStreamName(STREAM_NAME).setType(SMRMap.class).open());
+        LOG.info("Corfu initialization complete.");
     }
 
     private CorfuRuntime getRuntimeAndConnect(String configurationString) {

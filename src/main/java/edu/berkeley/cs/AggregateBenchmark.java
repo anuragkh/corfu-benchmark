@@ -8,15 +8,17 @@ import java.util.concurrent.Future;
 import java.util.function.Predicate;
 
 @Deprecated
-class ReadBenchmark extends CorfuBenchmark {
+class AggregateBenchmark extends CorfuBenchmark {
 
-    ReadBenchmark(String conf, int batchSize, int numBatches, int numThreads, String dataSource) {
+    AggregateBenchmark(String conf, int batchSize, int numBatches, int numThreads, String dataSource) {
         super(conf, batchSize, numBatches, numThreads, dataSource);
     }
 
-    class ReaderTask implements Callable<Result> {
+    class AggregateTask implements Callable<Result> {
         public Result call() throws Exception {
             long numOps = 0;
+            int count = 0;
+            double sum = 0, min = Double.MAX_VALUE, max = -Double.MAX_VALUE;
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < getNumBatches(); i++) {
                 int dataIdx = (new Random()).nextInt(getNumDataPts() - getBatchSize());
@@ -24,22 +26,32 @@ class ReadBenchmark extends CorfuBenchmark {
                 Long t2 = dataPoint(dataIdx + getBatchSize()).timestamp;
                 Predicate<Map.Entry<Long, Double>> query = p -> (p.getKey() >= t1) && (p.getKey() <= t2);
                 Collection<Map.Entry<Long, Double>> res = getMap().scanAndFilterByEntry(query);
-                numOps += res.size();
+                count = res.size();
+                sum = 0;
+                min = Double.MAX_VALUE;
+                max = -Double.MAX_VALUE;
+                for (Map.Entry<Long, Double> entry : res) {
+                    sum += entry.getValue();
+                    min = Double.min(min, entry.getValue());
+                    max = Double.max(max, entry.getValue());
+                }
+                numOps += 1;
             }
             long endTime = System.currentTimeMillis();
             long totTime = endTime - startTime;
             double thput = (double) (numOps) / (totTime / 1000.0);
             double latency = (double) totTime / (double) (numOps);
+            LOG.info("sum = " + sum + " min = " + min + " max = " + max + " count = " + count);
             return new Result(thput, latency);
         }
     }
 
     void runBenchmark() {
-        LOG.info("Running read benchmark...");
+        LOG.info("Running aggregate benchmark...");
         ExecutorService executor = Executors.newFixedThreadPool(getNumThreads());
-        List<ReaderTask> tasks = new ArrayList<>();
+        List<AggregateTask> tasks = new ArrayList<>();
         for (int i = 0; i < getNumThreads(); i++) {
-            tasks.add(new ReaderTask());
+            tasks.add(new AggregateTask());
         }
         List<Future<Result>> futures = null;
         try {
