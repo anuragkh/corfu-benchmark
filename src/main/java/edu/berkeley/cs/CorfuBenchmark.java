@@ -4,7 +4,6 @@ import org.corfudb.runtime.CorfuRuntime;
 import org.corfudb.runtime.collections.SMRMap;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -49,6 +48,13 @@ abstract class CorfuBenchmark {
         setCorfuRuntime(getRuntimeAndConnect(corfuConfigurationString));
         setMap(getCorfuRuntime().getObjectsView().build().setStreamName(STREAM_NAME).setType(SMRMap.class).open());
         LOG.info("Corfu initialization complete.");
+        LOG.info("Created new benchmark with: ");
+        LOG.info("\thost/port: " + corfuConfigurationString);
+        LOG.info("\tstream: " + STREAM_NAME);
+        LOG.info("\tbatch-size: " + batchSize);
+        LOG.info("\tnum-iterations: " + numBatches);
+        LOG.info("\tnum-threads: " + numThreads);
+        LOG.info("\tdata-source: " + dataSource);
     }
 
     private CorfuRuntime getRuntimeAndConnect(String configurationString) {

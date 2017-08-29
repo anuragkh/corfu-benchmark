@@ -1,11 +1,10 @@
 package edu.berkeley.cs;
 
+import org.corfudb.runtime.exceptions.TransactionAbortedException;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 @Deprecated
 class WriteBenchmark extends CorfuBenchmark {
@@ -18,12 +17,16 @@ class WriteBenchmark extends CorfuBenchmark {
         public Result call() throws Exception {
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < getNumBatches(); i++) {
-                TXBegin();
-                for (int j = 0; j < getBatchSize(); j++) {
-                    int dataIdx = i * getBatchSize() + j;
-                    getMap().put(dataPoint(dataIdx).timestamp, dataPoint(dataIdx).value);
+                try {
+                    TXBegin();
+                    for (int j = 0; j < getBatchSize(); j++) {
+                        int dataIdx = i * getBatchSize() + j;
+                        getMap().put(dataPoint(dataIdx).timestamp, dataPoint(dataIdx).value);
+                    }
+                    TXEnd();
+                } catch (TransactionAbortedException ignored) {
+                    i--;
                 }
-                TXEnd();
             }
             long endTime = System.currentTimeMillis();
             long totTime = endTime - startTime;
