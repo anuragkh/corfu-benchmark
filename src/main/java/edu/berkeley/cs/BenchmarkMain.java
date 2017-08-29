@@ -50,12 +50,15 @@ public class BenchmarkMain {
         int numThreads = Integer.parseInt(cmd.getOptionValue("num-threads", "1"));
         String dataSource = cmd.getOptionValue("data-source");
 
+        CorfuBenchmark bench = null;
         if (benchType.equalsIgnoreCase("write")) {
-            WriteBenchmark bench = new WriteBenchmark(conf, batchSize, numBatches, numThreads, dataSource);
-            bench.runBenchmark();
+            bench = new WriteBenchmark(conf, batchSize, numBatches, numThreads, dataSource);
         } else if (benchType.equalsIgnoreCase("read")) {
-            ReadBenchmark bench = new ReadBenchmark(conf, batchSize, numBatches, numThreads, dataSource);
-            bench.runBenchmark();
+            bench = new ReadBenchmark(conf, batchSize, numBatches, numThreads, dataSource);
+        } else if (benchType.equalsIgnoreCase("load")) {
+            bench = new LoadData(conf, batchSize, numBatches, numThreads, dataSource);
         }
+        assert bench != null;
+        bench.runBenchmark();
     }
 }
