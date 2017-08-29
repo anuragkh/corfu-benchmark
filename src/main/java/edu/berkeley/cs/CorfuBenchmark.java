@@ -53,7 +53,7 @@ abstract class CorfuBenchmark {
         return new CorfuRuntime(configurationString).connect();
     }
 
-    CorfuRuntime getCorfuRuntime() {
+    private CorfuRuntime getCorfuRuntime() {
         return corfuRuntime;
     }
 
@@ -95,8 +95,6 @@ abstract class CorfuBenchmark {
                 data[i] = new DataPoint(Long.parseLong(csv[0]), Double.parseDouble(csv[1]));
                 ++i;
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -115,7 +113,7 @@ abstract class CorfuBenchmark {
         return NUM_DATA_PTS;
     }
 
-    public String getStreamName() {
+    String getStreamName() {
         return STREAM_NAME;
     }
 
