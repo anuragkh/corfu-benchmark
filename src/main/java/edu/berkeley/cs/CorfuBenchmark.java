@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 @Deprecated
 abstract class CorfuBenchmark {
     private static String STREAM_NAME = "test";
-    private static int NUM_DATA_PTS = 100000000;
+    private static int NUM_DATA_PTS = 10000000;
 
     static {
         System.setProperty("java.util.logging.SimpleFormatter.format",
