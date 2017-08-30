@@ -15,6 +15,8 @@ class WriteBenchmark extends CorfuBenchmark {
 
     class WriterTask implements Callable<Result> {
         public Result call() throws Exception {
+            long numOps = 0;
+            long numAborts = 0;
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < getNumBatches(); i++) {
                 try {
@@ -24,14 +26,17 @@ class WriteBenchmark extends CorfuBenchmark {
                         getMap().put(dataPoint(dataIdx).timestamp, dataPoint(dataIdx).value);
                     }
                     TXEnd();
+                    numOps += getBatchSize();
                 } catch (TransactionAbortedException ignored) {
-                    i--;
+                    numAborts++;
                 }
             }
             long endTime = System.currentTimeMillis();
             long totTime = endTime - startTime;
-            double thput = (double) (getNumBatches() * getBatchSize()) / (totTime / 1000.0);
-            double latency = (double) (totTime) / (double) (getNumBatches() * getBatchSize());
+            double thput = (double) numOps / (totTime / 1000.0);
+            double latency = (double) totTime / (double) numOps;
+            if (numAborts > 0)
+                LOG.warning(numAborts + " tx aborts");
             return new Result(thput, latency);
         }
     }
