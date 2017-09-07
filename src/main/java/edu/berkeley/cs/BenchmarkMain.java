@@ -59,6 +59,6 @@ public class BenchmarkMain {
             bench = new LoadData(conf, batchSize, numBatches, numThreads, dataSource);
         }
         assert bench != null;
-        bench.runBenchmark();
+        bench.run();
     }
 }

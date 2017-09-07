@@ -41,7 +41,7 @@ class WriteBenchmark extends CorfuBenchmark {
         }
     }
 
-    void runBenchmark() {
+    void run() {
         LOG.info("Running write benchmark...");
         ExecutorService executor = Executors.newFixedThreadPool(getNumThreads());
         List<WriterTask> tasks = new ArrayList<>();

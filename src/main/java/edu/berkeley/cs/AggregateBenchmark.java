@@ -46,7 +46,7 @@ class AggregateBenchmark extends CorfuBenchmark {
         }
     }
 
-    void runBenchmark() {
+    void run() {
         LOG.info("Running aggregate benchmark...");
         ExecutorService executor = Executors.newFixedThreadPool(getNumThreads());
         List<AggregateTask> tasks = new ArrayList<>();

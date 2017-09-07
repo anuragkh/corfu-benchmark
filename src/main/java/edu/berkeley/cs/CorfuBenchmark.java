@@ -141,5 +141,5 @@ abstract class CorfuBenchmark {
         return data[i];
     }
 
-    abstract void runBenchmark();
+    abstract void run();
 }

@@ -6,7 +6,7 @@ public class LoadData extends CorfuBenchmark {
         super(conf, batchSize, numBatches, numThreads, dataSource);
     }
 
-    void runBenchmark() {
+    void run() {
         LOG.info("Loading data to " + getStreamName());
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < getNumDataPts(); i += getBatchSize()) {

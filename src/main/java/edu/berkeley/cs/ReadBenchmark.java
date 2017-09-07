@@ -34,7 +34,7 @@ class ReadBenchmark extends CorfuBenchmark {
         }
     }
 
-    void runBenchmark() {
+    void run() {
         LOG.info("Running read benchmark...");
         ExecutorService executor = Executors.newFixedThreadPool(getNumThreads());
         List<ReaderTask> tasks = new ArrayList<>();
