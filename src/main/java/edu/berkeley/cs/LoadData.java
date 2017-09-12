@@ -2,8 +2,8 @@ package edu.berkeley.cs;
 
 @Deprecated
 public class LoadData extends CorfuBenchmark {
-    LoadData(String conf, int batchSize, int numBatches, int numThreads, String dataSource) {
-        super(conf, batchSize, numBatches, numThreads, dataSource);
+    LoadData(String conf, int batchSize, int numIter, int numThreads, String dataSource) {
+        super(conf, batchSize, numIter, numThreads, dataSource);
     }
 
     void run() {

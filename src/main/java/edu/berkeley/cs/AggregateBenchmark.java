@@ -10,8 +10,8 @@ import java.util.function.Predicate;
 @Deprecated
 class AggregateBenchmark extends CorfuBenchmark {
 
-    AggregateBenchmark(String conf, int batchSize, int numBatches, int numThreads, String dataSource) {
-        super(conf, batchSize, numBatches, numThreads, dataSource);
+    AggregateBenchmark(String conf, int batchSize, int numIter, int numThreads, String dataSource) {
+        super(conf, batchSize, numIter, numThreads, dataSource);
     }
 
     class AggregateTask implements Callable<Result> {
@@ -20,7 +20,7 @@ class AggregateBenchmark extends CorfuBenchmark {
             int count = 0;
             double sum = 0, min = Double.MAX_VALUE, max = -Double.MAX_VALUE;
             long startTime = System.currentTimeMillis();
-            for (int i = 0; i < getNumBatches(); i++) {
+            for (int i = 0; i < getNumIter(); i++) {
                 int dataIdx = (new Random()).nextInt(getNumDataPts() - getBatchSize());
                 Long t1 = dataPoint(dataIdx).timestamp;
                 Long t2 = dataPoint(dataIdx + getBatchSize()).timestamp;

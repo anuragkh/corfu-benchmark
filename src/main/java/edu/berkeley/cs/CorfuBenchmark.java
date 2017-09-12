@@ -22,7 +22,7 @@ abstract class CorfuBenchmark {
     private CorfuRuntime corfuRuntime;
     private SMRMap<Long, Double> map;
     private int batchSize;
-    private int numBatches;
+    private int numIter;
     private int numThreads;
     private String dataSource;
 
@@ -37,9 +37,9 @@ abstract class CorfuBenchmark {
     }
     private DataPoint[] data;
 
-    CorfuBenchmark(String corfuConfigurationString, int batchSize, int numBatches, int numThreads, String dataSource) {
+    CorfuBenchmark(String corfuConfigurationString, int batchSize, int numIter, int numThreads, String dataSource) {
         this.batchSize = batchSize;
-        this.numBatches = numBatches;
+        this.numIter = numIter;
         this.numThreads = numThreads;
         this.dataSource = dataSource;
         this.data = new DataPoint[NUM_DATA_PTS];
@@ -52,7 +52,7 @@ abstract class CorfuBenchmark {
         LOG.info("\thost/port: " + corfuConfigurationString);
         LOG.info("\tstream: " + STREAM_NAME);
         LOG.info("\tbatch-size: " + batchSize);
-        LOG.info("\tnum-iterations: " + numBatches);
+        LOG.info("\tnum-iterations: " + numIter);
         LOG.info("\tnum-threads: " + numThreads);
         LOG.info("\tdata-source: " + dataSource);
     }
@@ -129,8 +129,8 @@ abstract class CorfuBenchmark {
         return batchSize;
     }
 
-    int getNumBatches() {
-        return numBatches;
+    int getNumIter() {
+        return numIter;
     }
 
     int getNumThreads() {
