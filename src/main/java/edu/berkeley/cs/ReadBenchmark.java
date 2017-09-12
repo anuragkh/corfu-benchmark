@@ -19,10 +19,8 @@ class ReadBenchmark extends CorfuBenchmark {
             long numOps = 0;
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < getNumBatches(); i++) {
-                int dataIdx = (new Random()).nextInt(getNumDataPts() - getBatchSize());
-                LOG.info("Read key = " + dataPoint(dataIdx).timestamp);
-                double value = getMap().get(dataPoint(dataIdx).timestamp);
-                LOG.info("Value = " + value);
+                Long timestamp = dataPoint((new Random()).nextInt(getNumDataPts())).timestamp;
+                getMap().get(timestamp);
                 numOps += 1;
             }
             long endTime = System.currentTimeMillis();
