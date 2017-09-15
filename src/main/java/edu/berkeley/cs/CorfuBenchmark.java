@@ -2,6 +2,7 @@ package edu.berkeley.cs;
 
 import org.corfudb.runtime.CorfuRuntime;
 import org.corfudb.runtime.collections.SMRMap;
+import org.corfudb.util.serializer.Serializers;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -46,7 +47,12 @@ abstract class CorfuBenchmark {
         readCSV();
         LOG.info("Initializing Corfu connections/structures...");
         setCorfuRuntime(getRuntimeAndConnect(corfuConfigurationString));
-        setMap(getCorfuRuntime().getObjectsView().build().setStreamName(STREAM_NAME).setType(SMRMap.class).open());
+        setMap(getCorfuRuntime().getObjectsView()
+                                .build()
+                                .setSerializer(Serializers.PRIMITIVE)
+                                .setStreamName(STREAM_NAME)
+                                .setType(SMRMap.class)
+                                .open());
         LOG.info("Corfu initialization complete.");
         LOG.info("Created new benchmark with: ");
         LOG.info("\thost/port: " + corfuConfigurationString);

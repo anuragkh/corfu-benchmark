@@ -23,7 +23,7 @@ class WriteBenchmark extends CorfuBenchmark {
                     TXBegin();
                     for (int j = 0; j < getBatchSize(); j++) {
                         int dataIdx = i * getBatchSize() + j;
-                        getMap().put(dataPoint(dataIdx).timestamp, dataPoint(dataIdx).value);
+                        getMap().blindPut(dataPoint(dataIdx).timestamp, dataPoint(dataIdx).value);
                     }
                     TXEnd();
                     numOps += getBatchSize();

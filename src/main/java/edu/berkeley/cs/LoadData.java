@@ -13,7 +13,7 @@ public class LoadData extends CorfuBenchmark {
             TXBegin();
             for (int j = 0; j < getBatchSize(); j++) {
                 DataPoint p = dataPoint(i + j);
-                getMap().put(p.timestamp, p.value);
+                getMap().blindPut(p.timestamp, p.value);
             }
             TXEnd();
             if (i != 0 && i % 10000 == 0) {
