@@ -15,6 +15,12 @@ class AggregateBenchmark extends CorfuBenchmark {
     }
 
     class AggregateTask implements Callable<Result> {
+        private int tid;
+
+        AggregateTask(int tid) {
+            this.tid = tid;
+        }
+
         public Result call() throws Exception {
             long numOps = 0;
             int count = 0;
@@ -25,7 +31,7 @@ class AggregateBenchmark extends CorfuBenchmark {
                 Long t1 = dataPoint(dataIdx).timestamp;
                 Long t2 = dataPoint(dataIdx + getBatchSize()).timestamp;
                 Predicate<Map.Entry<Long, Double>> query = p -> (p.getKey() >= t1) && (p.getKey() <= t2);
-                Collection<Map.Entry<Long, Double>> res = getMap().scanAndFilterByEntry(query);
+                Collection<Map.Entry<Long, Double>> res = getMap(tid).scanAndFilterByEntry(query);
                 count = res.size();
                 sum = 0;
                 min = Double.MAX_VALUE;
@@ -51,7 +57,7 @@ class AggregateBenchmark extends CorfuBenchmark {
         ExecutorService executor = Executors.newFixedThreadPool(getNumThreads());
         List<AggregateTask> tasks = new ArrayList<>();
         for (int i = 0; i < getNumThreads(); i++) {
-            tasks.add(new AggregateTask());
+            tasks.add(new AggregateTask(i));
         }
         List<Future<Result>> futures = null;
         try {

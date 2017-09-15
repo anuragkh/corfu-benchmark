@@ -14,12 +14,17 @@ class ReadBenchmark extends CorfuBenchmark {
     }
 
     class ReaderTask implements Callable<Result> {
+        private int tid;
+        ReaderTask(int tid) {
+            this.tid = tid;
+        }
+
         public Result call() throws Exception {
             long numOps = 0;
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < getNumIter(); i++) {
                 Long timestamp = dataPoint((new Random()).nextInt(getNumDataPts())).timestamp;
-                getMap().get(timestamp);
+                getMap(tid).get(timestamp);
                 numOps += 1;
             }
             long endTime = System.currentTimeMillis();
@@ -35,7 +40,7 @@ class ReadBenchmark extends CorfuBenchmark {
         ExecutorService executor = Executors.newFixedThreadPool(getNumThreads());
         List<ReaderTask> tasks = new ArrayList<>();
         for (int i = 0; i < getNumThreads(); i++) {
-            tasks.add(new ReaderTask());
+            tasks.add(new ReaderTask(i));
         }
         List<Future<Result>> futures = null;
         try {

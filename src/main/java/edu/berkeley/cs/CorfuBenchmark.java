@@ -7,12 +7,14 @@ import org.corfudb.util.serializer.Serializers;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Deprecated
 abstract class CorfuBenchmark {
     private static String STREAM_NAME = "test";
-    private static int NUM_DATA_PTS = 10000000;
+    private static int NUM_DATA_PTS = 16777216;
 
     static {
         System.setProperty("java.util.logging.SimpleFormatter.format",
@@ -21,7 +23,7 @@ abstract class CorfuBenchmark {
     final static Logger LOG = Logger.getLogger(CorfuBenchmark.class.getName());
 
     private CorfuRuntime corfuRuntime;
-    private SMRMap<Long, Double> map;
+    private List<SMRMap<Long, Double>> maps;
     private int batchSize;
     private int numIter;
     private int numThreads;
@@ -43,24 +45,27 @@ abstract class CorfuBenchmark {
         this.numIter = numIter;
         this.numThreads = numThreads;
         this.dataSource = dataSource;
-        this.data = new DataPoint[NUM_DATA_PTS];
-        readCSV();
-        LOG.info("Initializing Corfu connections/structures...");
-        setCorfuRuntime(getRuntimeAndConnect(corfuConfigurationString));
-        setMap(getCorfuRuntime().getObjectsView()
-                                .build()
-                                .setSerializer(Serializers.PRIMITIVE)
-                                .setStreamName(STREAM_NAME)
-                                .setType(SMRMap.class)
-                                .open());
-        LOG.info("Corfu initialization complete.");
-        LOG.info("Created new benchmark with: ");
+        LOG.info("Creating new benchmark with: ");
         LOG.info("\thost/port: " + corfuConfigurationString);
         LOG.info("\tstream: " + STREAM_NAME);
         LOG.info("\tbatch-size: " + batchSize);
         LOG.info("\tnum-iterations: " + numIter);
         LOG.info("\tnum-threads: " + numThreads);
         LOG.info("\tdata-source: " + dataSource);
+        this.maps = new ArrayList<>(numThreads);
+        this.data = new DataPoint[NUM_DATA_PTS];
+        readCSV();
+        LOG.info("Initializing Corfu connections/structures...");
+        setCorfuRuntime(getRuntimeAndConnect(corfuConfigurationString));
+        for (int i = 0; i < numThreads; i++) {
+            addMap(getCorfuRuntime().getObjectsView()
+                    .build()
+                    .setSerializer(Serializers.PRIMITIVE)
+                    .setStreamName(STREAM_NAME + i)
+                    .setType(SMRMap.class)
+                    .open());
+        }
+        LOG.info("Corfu initialization complete.");
     }
 
     private CorfuRuntime getRuntimeAndConnect(String configurationString) {
@@ -75,12 +80,12 @@ abstract class CorfuBenchmark {
         this.corfuRuntime = corfuRuntime;
     }
 
-    SMRMap<Long, Double> getMap() {
-        return map;
+    SMRMap<Long, Double> getMap(int i) {
+        return maps.get(i);
     }
 
-    private void setMap(SMRMap<Long, Double> map) {
-        this.map = map;
+    private void addMap(SMRMap<Long, Double> map) {
+        this.maps.add(map);
     }
 
     void TXBegin() {

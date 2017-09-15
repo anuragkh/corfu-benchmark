@@ -14,6 +14,12 @@ class WriteBenchmark extends CorfuBenchmark {
     }
 
     class WriterTask implements Callable<Result> {
+        int tid;
+
+        WriterTask(int tid) {
+            this.tid = tid;
+        }
+
         public Result call() throws Exception {
             long numOps = 0;
             long numAborts = 0;
@@ -23,7 +29,7 @@ class WriteBenchmark extends CorfuBenchmark {
                     TXBegin();
                     for (int j = 0; j < getBatchSize(); j++) {
                         int dataIdx = i * getBatchSize() + j;
-                        getMap().blindPut(dataPoint(dataIdx).timestamp, dataPoint(dataIdx).value);
+                        getMap(tid).blindPut(dataPoint(dataIdx).timestamp, dataPoint(dataIdx).value);
                     }
                     TXEnd();
                     numOps += getBatchSize();
@@ -46,7 +52,7 @@ class WriteBenchmark extends CorfuBenchmark {
         ExecutorService executor = Executors.newFixedThreadPool(getNumThreads());
         List<WriterTask> tasks = new ArrayList<>();
         for (int i = 0; i < getNumThreads(); i++) {
-            tasks.add(new WriterTask());
+            tasks.add(new WriterTask(i));
         }
         List<Future<Result>> futures = null;
         try {
