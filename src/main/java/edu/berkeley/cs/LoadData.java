@@ -38,7 +38,8 @@ public class LoadData extends CorfuBenchmark {
                 } catch (TransactionAbortedException ignored) {
                     numAborts++;
                 }
-                LOG.info("Loaded " + i + " data points...");
+                if (i > 0 && i % 10000 == 0)
+                    LOG.info("Loaded " + i + " data points...");
             }
             long endTime = System.currentTimeMillis();
             long totTime = endTime - startTime;
