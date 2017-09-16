@@ -40,7 +40,7 @@ class ReadBenchmark extends CorfuBenchmark {
         ExecutorService executor = Executors.newFixedThreadPool(getNumThreads());
         List<ReaderTask> tasks = new ArrayList<>();
         for (int i = 0; i < getNumThreads(); i++) {
-            tasks.add(new ReaderTask(i));
+            tasks.add(new ReaderTask(0));
         }
         List<Future<Result>> futures = null;
         try {

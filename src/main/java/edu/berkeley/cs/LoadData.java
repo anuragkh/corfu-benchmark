@@ -53,7 +53,6 @@ public class LoadData extends CorfuBenchmark {
 
     void run() {
         LOG.info("Loading data to " + getStreamName());
-        LOG.info("Running write benchmark...");
         ExecutorService executor = Executors.newFixedThreadPool(getNumThreads());
         List<LoaderTask> tasks = new ArrayList<>();
         for (int i = 0; i < getNumThreads(); i++) {
