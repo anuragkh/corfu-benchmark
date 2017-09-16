@@ -26,11 +26,11 @@ public class LoadData extends CorfuBenchmark {
             long numOps = 0;
             long numAborts = 0;
             long startTime = System.currentTimeMillis();
-            for (int i = 0; i < getNumDataPts(); i++) {
+            for (int i = 0; i < getNumDataPts(); i += getBatchSize()) {
                 try {
                     TXBegin();
                     for (int j = 0; j < getBatchSize(); j++) {
-                        int dataIdx = i * getBatchSize() + j;
+                        int dataIdx = i + j;
                         getMap(tid).blindPut(dataPoint(dataIdx).timestamp, dataPoint(dataIdx).value);
                     }
                     TXEnd();
@@ -38,7 +38,7 @@ public class LoadData extends CorfuBenchmark {
                 } catch (TransactionAbortedException ignored) {
                     numAborts++;
                 }
-                if (i > 0 && i % 10000 == 0)
+                if (i > 0 && i % (getBatchSize() * 10) == 0)
                     LOG.info("Loaded " + i + " data points...");
             }
             long endTime = System.currentTimeMillis();
