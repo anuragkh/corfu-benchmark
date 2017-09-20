@@ -26,6 +26,7 @@ public class LoadData extends CorfuBenchmark {
             long numOps = 0;
             long numAborts = 0;
             long startTime = System.currentTimeMillis();
+            double nextReportPerc = 0.1;
             for (int i = 0; i < getNumDataPts(); i += getBatchSize()) {
                 try {
                     TXBegin();
@@ -38,9 +39,13 @@ public class LoadData extends CorfuBenchmark {
                 } catch (TransactionAbortedException ignored) {
                     numAborts++;
                 }
-                if (i > 0 && i % (getBatchSize() * 10) == 0)
-                    LOG.info("Loaded " + i + " data points...");
+                double percDone = (double) i / (double) getNumDataPts();
+                if (percDone >= nextReportPerc) {
+                    LOG.info("Loaded " + (percDone * 100) + "% data points...");
+                    nextReportPerc += 0.1;
+                }
             }
+            LOG.info("Loaded 100% data points.");
             long endTime = System.currentTimeMillis();
             long totTime = endTime - startTime;
             double thput = (double) numOps / (totTime / 1000.0);

@@ -20,6 +20,16 @@ class ReadBenchmark extends CorfuBenchmark {
         }
 
         public Result call() throws Exception {
+            // Warmup
+            for (int i = 0; i < getNumIter() / 10; i++) {
+                Long timestamp = dataPoint((new Random()).nextInt(getNumDataPts())).timestamp;
+                long t1 = System.currentTimeMillis();
+                getMap(tid).get(timestamp);
+                long t2 = System.currentTimeMillis();
+                long totTime = t2 - t1;
+                LOG.info("Read " + i + " took " + totTime + "ms");
+            }
+
             long numOps = 0;
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < getNumIter(); i++) {
