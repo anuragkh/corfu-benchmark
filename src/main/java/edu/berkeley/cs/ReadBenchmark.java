@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Predicate;
 
 @Deprecated
 class ReadBenchmark extends CorfuBenchmark {
@@ -22,20 +23,26 @@ class ReadBenchmark extends CorfuBenchmark {
         public Result call() throws Exception {
             // Warmup
             for (int i = 0; i < getNumIter() / 10; i++) {
-                Long timestamp = dataPoint((new Random()).nextInt(getNumDataPts())).timestamp;
-                long t1 = System.currentTimeMillis();
-                getMap(tid).get(timestamp);
-                long t2 = System.currentTimeMillis();
-                long totTime = t2 - t1;
+                int dataIdx = (new Random()).nextInt(getNumDataPts() - getBatchSize());
+                Long t1 = dataPoint(dataIdx).timestamp;
+                Long t2 = dataPoint(dataIdx + getBatchSize()).timestamp;
+                long startTime = System.currentTimeMillis();
+                Predicate<Map.Entry<Long, Double>> query = p -> (p.getKey() >= t1) && (p.getKey() <= t2);
+                getMap(tid).scanAndFilterByEntry(query);
+                long endTime = System.currentTimeMillis();
+                long totTime = endTime - startTime;
                 LOG.info("Read " + i + " took " + totTime + "ms");
             }
 
             long numOps = 0;
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < getNumIter(); i++) {
-                Long timestamp = dataPoint((new Random()).nextInt(getNumDataPts())).timestamp;
-                getMap(tid).get(timestamp);
-                numOps += 1;
+                int dataIdx = (new Random()).nextInt(getNumDataPts() - getBatchSize());
+                Long t1 = dataPoint(dataIdx).timestamp;
+                Long t2 = dataPoint(dataIdx + getBatchSize()).timestamp;
+                Predicate<Map.Entry<Long, Double>> query = p -> (p.getKey() >= t1) && (p.getKey() <= t2);
+                getMap(tid).scanAndFilterByEntry(query);
+                numOps += getBatchSize();
             }
             long endTime = System.currentTimeMillis();
             long totTime = endTime - startTime;
