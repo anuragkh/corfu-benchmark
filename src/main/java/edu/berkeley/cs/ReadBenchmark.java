@@ -22,7 +22,7 @@ class ReadBenchmark extends CorfuBenchmark {
 
         public Result call() throws Exception {
             // Warmup
-            for (int i = 0; i < getNumIter() / 10; i++) {
+            for (int i = 0; i < 10; i++) {
                 int dataIdx = (new Random()).nextInt(getNumDataPts() - getBatchSize());
                 Long t1 = dataPoint(dataIdx).timestamp;
                 Long t2 = dataPoint(dataIdx + getBatchSize()).timestamp;
