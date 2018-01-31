@@ -9,8 +9,8 @@ import java.util.concurrent.*;
 @Deprecated
 class WriteBenchmark extends CorfuBenchmark {
 
-    WriteBenchmark(String conf, int batchSize, int numIter, int numThreads, String dataSource) {
-        super(conf, batchSize, numIter, numThreads, dataSource);
+    WriteBenchmark(String conf, int batchSize, int numIter, int numThreads) {
+        super(conf, batchSize, numIter, numThreads);
     }
 
     class WriterTask implements Callable<Result> {
@@ -28,8 +28,7 @@ class WriteBenchmark extends CorfuBenchmark {
                 try {
                     TXBegin();
                     for (int j = 0; j < getBatchSize(); j++) {
-                        int dataIdx = i * getBatchSize() + j;
-                        getMap(tid).blindPut(dataPoint(dataIdx).timestamp, dataPoint(dataIdx).value);
+                        getMap(tid).blindPut(System.nanoTime(), DATA);
                     }
                     TXEnd();
                     numOps += getBatchSize();

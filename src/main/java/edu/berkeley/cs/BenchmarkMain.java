@@ -7,10 +7,6 @@ public class BenchmarkMain {
     public static void main(String[] args) {
         Options options = new Options();
 
-        Option benchTypeOpt = new Option("T", "type", true, "Benchmark type (read/write)");
-        benchTypeOpt.setType(String.class);
-        options.addOption(benchTypeOpt);
-
         Option confOpt = new Option("c", "conf", true, "Corfu configuration string");
         confOpt.setType(String.class);
         options.addOption(confOpt);
@@ -27,11 +23,6 @@ public class BenchmarkMain {
         numThreadsOpt.setType(Integer.class);
         options.addOption(numThreadsOpt);
 
-        Option dataSourceOpt = new Option("d", "data-source", true, "Data source (csv file)");
-        dataSourceOpt.setType(String.class);
-        dataSourceOpt.setRequired(true);
-        options.addOption(dataSourceOpt);
-
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd = null;
@@ -43,22 +34,12 @@ public class BenchmarkMain {
             System.exit(1);
         }
 
-        String benchType = cmd.getOptionValue("type", "write");
         String conf = cmd.getOptionValue("conf", "localhost:9000");
         int batchSize = Integer.parseInt(cmd.getOptionValue("batch-size", "1"));
         int numBatches = Integer.parseInt(cmd.getOptionValue("num-batches", "1000"));
         int numThreads = Integer.parseInt(cmd.getOptionValue("num-threads", "1"));
-        String dataSource = cmd.getOptionValue("data-source");
 
-        CorfuBenchmark bench = null;
-        if (benchType.equalsIgnoreCase("write")) {
-            bench = new WriteBenchmark(conf, batchSize, numBatches, numThreads, dataSource);
-        } else if (benchType.equalsIgnoreCase("read")) {
-            bench = new ReadBenchmark(conf, batchSize, numBatches, numThreads, dataSource);
-        } else if (benchType.equalsIgnoreCase("load")) {
-            bench = new LoadData(conf, batchSize, numBatches, numThreads, dataSource);
-        }
-        assert bench != null;
+        CorfuBenchmark bench = new WriteBenchmark(conf, batchSize, numBatches, numThreads);
         bench.run();
     }
 }
